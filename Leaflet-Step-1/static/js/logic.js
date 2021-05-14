@@ -3,10 +3,39 @@ console.log("logic.js is loaded");
 // Store our API endpoint inside queryUrl - all earthquakes greater than 2.5 mag in the last 7 days
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
 
+// Define a function to determine marker size based on magnitude
+function markerSize(mag) {
+    return mag * 10;
+}
+
+// Define a function to color feature markers based on depth
+function chooseColor(depth) {
+    switch (true) {
+        case (depth < 10):
+            return "#81fa6e";
+            break;
+        case (depth >= 10 && depth < 30):
+            return "#00dfa6";
+            break;
+        case (depth >= 30 && depth < 50):
+            return "#00bbdb";
+            break;
+        case (depth >= 50 && depth < 70):
+            return "#0093f5";
+            break;
+        case (depth >= 70 && depth < 90):
+            return "#0062df";
+            break;
+        default:
+            return "#58199b";
+    };
+}
+
 // Perform a GET request to the query URL
 d3.json(queryUrl).then(function(data) {
-  // Once we get a response, send the data.features object to the createFeatures function
-  createFeatures(data.features);
+    console.log(data);
+    // Once we get a response, send the data.features object to the createFeatures function
+    createFeatures(data.features);
 });
 
 function createFeatures(earthquakeData) {
@@ -14,7 +43,7 @@ function createFeatures(earthquakeData) {
   // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
-    layer.bindPopup("<h3>" + feature.properties.place +
+    layer.bindPopup("<h3>" + feature.properties.place + "<br>Magnitude: " + feature.properties.mag +
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
   }
 
