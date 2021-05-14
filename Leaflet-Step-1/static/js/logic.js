@@ -5,7 +5,7 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_we
 
 // Define a function to determine marker size based on magnitude
 function markerSize(mag) {
-    return mag * 10;
+    return mag * 3;
 }
 
 // Define a function to color feature markers based on depth
@@ -40,21 +40,34 @@ d3.json(queryUrl).then(function(data) {
 
 function createFeatures(earthquakeData) {
 
-  // Define a function we want to run once for each feature in the features array
-  // Give each feature a popup describing the place and time of the earthquake
-  function onEachFeature(feature, layer) {
-    layer.bindPopup("<h3>" + feature.properties.place + "<br>Magnitude: " + feature.properties.mag +
-      "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
-  }
+    // Define markers
+    function pointToLayer(feature, latlng) {
+        return new L.CircleMarker(latlng, {
+            radius: markerSize(feature.properties.mag),
+            fillColor: chooseColor(feature.geometry.coordinates[2]),
+            fillOpacity: 0.8,
+            stroke: true,
+            color: "black",
+            weight: 1,
+        });
+    }
 
-  // Create a GeoJSON layer containing the features array on the earthquakeData object
-  // Run the onEachFeature function once for each piece of data in the array
-  var earthquakes = L.geoJSON(earthquakeData, {
-    onEachFeature: onEachFeature
-  });
+    // Define a function we want to run once for each feature in the features array
+    // Give each feature a popup describing the place and time of the earthquake
+    function onEachFeature(feature, layer) {
+        layer.bindPopup("<h3>" + feature.properties.place + "<br>Magnitude: " + feature.properties.mag +
+        "<br>Depth: " + feature.geometry.coordinates[2] + " kilometers</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+    }
 
-  // Sending our earthquakes layer to the createMap function
-  createMap(earthquakes);
+    // Create a GeoJSON layer containing the features array on the earthquakeData object
+    // Run the onEachFeature function once for each piece of data in the array
+    var earthquakes = L.geoJSON(earthquakeData, {
+        pointToLayer: pointToLayer,
+        onEachFeature: onEachFeature
+    });
+
+    // Sending our earthquakes layer to the createMap function
+    createMap(earthquakes);
 }
 
 function createMap(earthquakes) {
@@ -95,4 +108,24 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
+
+  // Add a legend to explain depth colors
+  var legend = L.control({position: "bottomright"});
+
+  legend.onAdd = function() {
+    var div = L.DomUtil.create("div", "info legend");
+    var labels = ["<strong>Earthquake Depth</strong>"];
+    var levels = ["< 10 km", "10-30 km", "30-50 km", "50-70 km", "70-90 km", "> 90 km"];
+    var colors = ["#81fa6e", "#00dfa6", "#00bbdb", "#0093f5", "#0062df", "#58199b"];
+
+    console.log(levels);
+    console.log(colors);
+    
+    for (var i=0; i < levels.length; i++) {
+      div.innerHTML += '<i style="background:' + colors[i] + '"></i>' + levels[i] + '<br>';
+    }
+    return div;
+  }
+  legend.addTo(myMap);
+
 }
