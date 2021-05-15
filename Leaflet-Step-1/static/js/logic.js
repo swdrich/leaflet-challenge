@@ -72,7 +72,7 @@ function createFeatures(earthquakeData) {
 
 function createMap(earthquakes) {
 
-  // Define streetmap and darkmap layers
+  // Define satellite and lightmap layers
   var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     tileSize: 512,
@@ -82,10 +82,20 @@ function createMap(earthquakes) {
     accessToken: API_KEY
   });
 
+  var lightMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
+    maxZoom: 18,
+    zoomOffset: -1,
+    id: "mapbox/light-v10",
+    accessToken: API_KEY
+  });
+
 
   // Define a baseMaps object to hold our base layers
   var baseMaps = {
-    "Satellite Map": satelliteMap
+    "Satellite Map": satelliteMap,
+    "Light Map": lightMap
   };
 
   // Create overlay object to hold our overlay layer
@@ -106,7 +116,7 @@ function createMap(earthquakes) {
   // Pass in our baseMaps and overlayMaps
   // Add the layer control to the map
   L.control.layers(baseMaps, overlayMaps, {
-    collapsed: false
+    collapsed: true
   }).addTo(myMap);
 
   // Add a legend to explain depth colors
@@ -124,7 +134,7 @@ function createMap(earthquakes) {
     for (var i=0; i < levels.length; i++) {
         div.innerHTML += labels.push('<i style="background:' + colors[i] + '"></i>' + levels[i] + '<br>');
       }
-      div.innerHTML = labels.join('<br>');
+      div.innerHTML = labels.join('<br><br>');
     return div;
   };
   legend.addTo(myMap);

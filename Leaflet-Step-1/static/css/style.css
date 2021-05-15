@@ -22,7 +22,7 @@ html {
 /* Set additional parameters for the legend including how much space each line will take */
 .legend {
   background-color: “black”;
-  line-height: 16px;
+  line-height: 10px;
   color: #555;
   width: auto;
 }
