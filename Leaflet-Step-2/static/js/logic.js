@@ -71,27 +71,37 @@ function createFeatures(earthquakeData) {
 }
 
 // Perform a GET request to plate data
-d3.json("data/PB2002_plates.json").then(function(data) {
+d3.json("data/PB2002_boundaries.json").then(function(data) {
   console.log(data);
-  drawPlates(data.features);
-});
-
-function drawPlates(plateData) {
-  var plates = L.geoJson(plateData, {
+  
+  var plates = L.geoJson(data, {
     style: function(feature) {
       return {
         color: "yellow",
         weight: 3
       };
     },
-    onEachFeature: function(feature, layer) {
-      layer.bindPopup("<h3>" + feature.properties.PlateName + "</h3>");
-    }
-  });
-  createMap(plates);
-}
+  })
+  return plates;
+});
 
-function createMap(earthquakes, plates) {
+
+// function drawPlates(plateData) {
+//   var plates = L.geoJson(plateData, {
+//     style: function(feature) {
+//       return {
+//         color: "yellow",
+//         weight: 3
+//       };
+//     },
+//     onEachFeature: function(feature, layer) {
+//       layer.bindPopup("<h3>" + feature.properties.PlateName + "</h3>");
+//     }
+//   });
+//   createMap(plates);
+//}
+
+function createMap(earthquakes) {
 
   // Define satellite and lightmap layers
   var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -111,7 +121,6 @@ function createMap(earthquakes, plates) {
     id: "mapbox/light-v10",
     accessToken: API_KEY
   });
-
 
   // Define a baseMaps object to hold our base layers
   var baseMaps = {
