@@ -70,7 +70,28 @@ function createFeatures(earthquakeData) {
     createMap(earthquakes);
 }
 
-function createMap(earthquakes) {
+// Perform a GET request to plate data
+d3.json("data/PB2002_plates.json").then(function(data) {
+  console.log(data);
+  drawPlates(data.features);
+});
+
+function drawPlates(plateData) {
+  var plates = L.geoJson(plateData, {
+    style: function(feature) {
+      return {
+        color: "yellow",
+        weight: 3
+      };
+    },
+    onEachFeature: function(feature, layer) {
+      layer.bindPopup("<h3>" + feature.properties.PlateName + "</h3>");
+    }
+  });
+  createMap(plates);
+}
+
+function createMap(earthquakes, plates) {
 
   // Define satellite and lightmap layers
   var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -100,7 +121,8 @@ function createMap(earthquakes) {
 
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
-    Earthquakes: earthquakes
+    Earthquakes: earthquakes,
+    Plates: plates
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
