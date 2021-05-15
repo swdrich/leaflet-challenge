@@ -122,10 +122,11 @@ function createMap(earthquakes) {
     console.log(colors);
     
     for (var i=0; i < levels.length; i++) {
-      div.innerHTML += '<i style="background:' + colors[i] + '"></i>' + levels[i] + '<br>';
-    }
+        div.innerHTML += labels.push('<i style="background:' + colors[i] + '"></i>' + levels[i] + '<br>');
+      }
+      div.innerHTML = labels.join('<br>');
     return div;
-  }
+  };
   legend.addTo(myMap);
 
 }
